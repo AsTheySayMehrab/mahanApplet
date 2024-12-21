@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نقشه با Leaflet</title>
+    <title>MapProject</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <style>
@@ -51,10 +51,10 @@
     
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-       
+        
         var map = L.map('map').setView([35.6892, 51.3890], 13); 
 
-       
+        
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© مشارکت‌کنندگان OpenStreetMap'
@@ -69,13 +69,13 @@
 
             if (lat && lng) {
                 var latLng = [parseFloat(lat), parseFloat(lng)];
-                map.setView(latLng, 13); // تنظیم نقشه به موقعیت جدید
+                map.setView(latLng, 13); 
             } else {
                 alert('لطفاً مقادیر معتبر برای عرض و طول جغرافیایی وارد کنید.');
             }
         }
 
-       
+        
         map.on('click', function(e) {
             var latLng = e.latlng;
             var info = prompt("اطلاعات مارکر را وارد کنید:");
@@ -102,13 +102,13 @@
             markers = []; 
         }
 
-
+        
         function saveMarkers() {
             localStorage.setItem('markers', JSON.stringify(markers));
             alert('مارکرها ذخیره شدند.');
         }
 
-
+       
         function loadMarkers() {
             var savedMarkers = JSON.parse(localStorage.getItem('markers')) || [];
 
