@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نقشه با Leaflet</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <style>
+        #map {
+            height: 100vh; 
+            width: 100%; 
+        }
+        #search-container {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        #marker-container {
+            position: absolute;
+            top: 80px;
+            left: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="search-container">
+        <label for="latitude">عرض جغرافیایی:</label>
+        <input type="text" id="latitude" placeholder="مثال: 35.6892">
+        <label for="longitude">طول جغرافیایی:</label>
+        <input type="text" id="longitude" placeholder="مثال: 51.3890">
+        <button onclick="searchLocation()">جستجو</button>
+    </div>
+    <div id="marker-container">
+        <button onclick="saveMarkers()">ذخیره مارکرها</button>
+        <button onclick="loadMarkers()">بازیابی مارکرها</button>
+        <button onclick="removeMarkers()">حذف همه مارکرها</button>
+    </div>
+    <div id="map"></div>
+
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+       
+        var map = L.map('map').setView([35.6892, 51.3890], 13); 
+
+       
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© مشارکت‌کنندگان OpenStreetMap'
+        }).addTo(map);
+
+        var markers = []; 
+
+        
+        function searchLocation() {
+            var lat = document.getElementById('latitude').value;
+            var lng = document.getElementById('longitude').value;
+
+            if (lat && lng) {
+                var latLng = [parseFloat(lat), parseFloat(lng)];
+                map.setView(latLng, 13); // تنظیم نقشه به موقعیت جدید
+            } else {
+                alert('لطفاً مقادیر معتبر برای عرض و طول جغرافیایی وارد کنید.');
+            }
+        }
+
+       
+        map.on('click', function(e) {
+            var latLng = e.latlng;
+            var info = prompt("اطلاعات مارکر را وارد کنید:");
+
+            if (info !== null) {
+                var marker = L.marker([latLng.lat, latLng.lng]).addTo(map);
+                var popupContent = `<b>اطلاعات:</b> ${info}<br><b>عرض جغرافیایی:</b> ${latLng.lat}<br><b>طول جغرافیایی:</b> ${latLng.lng}`;
+                marker.bindPopup(popupContent);
+                markers.push({
+                    lat: latLng.lat,
+                    lng: latLng.lng,
+                    info: info
+                }); 
+            }
+        });
+
+       
+        function removeMarkers() {
+            map.eachLayer(function(layer) {
+                if (layer instanceof L.Marker) {
+                    map.removeLayer(layer);
+                }
+            });
+            markers = []; 
+        }
+
+
+        function saveMarkers() {
+            localStorage.setItem('markers', JSON.stringify(markers));
+            alert('مارکرها ذخیره شدند.');
+        }
+
+
+        function loadMarkers() {
+            var savedMarkers = JSON.parse(localStorage.getItem('markers')) || [];
+
+            savedMarkers.forEach(function(data) {
+                var marker = L.marker([data.lat, data.lng]).addTo(map);
+                var popupContent = `<b>اطلاعات:</b> ${data.info}<br><b>عرض جغرافیایی:</b> ${data.lat}<br><b>طول جغرافیایی:</b> ${data.lng}`;
+                marker.bindPopup(popupContent);
+                markers.push(data);
+            });
+        }
+    </script>
+</body>
+</html>
